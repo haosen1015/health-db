@@ -1,0 +1,74 @@
+const fs = require('fs');
+const path = require('path');
+
+// 1. 读取 renmin.txt 源文件
+const txtPath = path.join(__dirname, 'renmin.txt');
+const outputDir = path.join(__dirname, 'articles', 'renmin');
+
+if (!fs.existsSync(txtPath)) {
+  console.error('❌ 未找到 renmin.txt 文件，请确认根目录下存在该文件！');
+  process.exit(1);
+}
+
+const content = fs.readFileSync(txtPath, 'utf-8');
+
+// 2. 按 "第 X 篇" 切割文章
+const articles = content.split(/(?=第\s*\d+\s*篇)/g).filter(item => item.trim().length > 0);
+
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
+
+let count = 0;
+
+articles.forEach((item, index) => {
+  const trimContent = item.trim();
+  if (!trimContent) return;
+
+  // 提取原文链接
+  const urlMatch = trimContent.match(/链接[：:]\s*(https?:\/\/[^\s]+)/i);
+  const url = urlMatch ? urlMatch[1] : '';
+
+  // 提取内容分析
+  const analysisMatch = trimContent.match(/内容分析[：:]\s*([\s\S]*?)(?=关键词|$)/i);
+  let analysis = analysisMatch ? analysisMatch[1].trim() : '';
+
+  // 提取关键词
+  const keywordMatch = trimContent.match(/关键词[：:]\s*(.*)/i);
+  const keywordStr = keywordMatch ? keywordMatch[1].trim() : '';
+  const keywords = keywordStr ? keywordStr.split(/[\s,，、]+/).filter(k => k) : [];
+
+  const numStr = String(index + 1).padStart(3, '0');
+  const mainKeyword = keywords[0] || '健康科普';
+  const fileName = `${numStr}-${mainKeyword}.md`;
+  const filePath = path.join(outputDir, fileName);
+
+  // 组合高颜值关键词标签 (带行内代码框样式)
+  const tagList = keywords.map(k => `\`${k}\``).join(' ');
+
+  // 渲染成与新华社完全一致的 Markdown 页面模版
+  const mdContent = `---
+title: "文章${index + 1}: ${mainKeyword}"
+source: "人民日报"
+---
+
+# 文章${index + 1}: ${mainKeyword}健康科普
+
+> **原文链接**：[点击查看微信原文](${url || '#'})
+
+---
+
+## 📌 内容分析
+
+${analysis || trimContent}
+
+---
+
+**核心关键词**： ${tagList || '`健康科普`'}
+`;
+
+  fs.writeFileSync(filePath, mdContent, 'utf-8');
+  count++;
+});
+
+console.log(`✅ 成功！已重新将人民日报拆分生成 ${count} 篇独立 Markdown 文章到 articles/renmin/ 目录！`);
