@@ -2,7 +2,13 @@ import { defineConfig } from 'vitepress'
 import fs from 'fs'
 import path from 'path'
 
-// 动态自动获取人民日报文章列表
+// 辅助函数：从文件名开头提取数字，确保按数值大小自然排序
+function extractNumber(str: string): number {
+  const match = str.match(/^(\d+)/)
+  return match ? parseInt(match[1], 10) : 0
+}
+
+// 动态自动获取人民日报文章列表（带自然数字排序）
 function getRenminSidebar() {
   const dirPath = path.resolve(__dirname, '../articles/renmin')
   if (!fs.existsSync(dirPath)) return []
@@ -10,6 +16,7 @@ function getRenminSidebar() {
   const files = fs.readdirSync(dirPath)
   return files
     .filter(file => file.endsWith('.md'))
+    .sort((a, b) => extractNumber(a) - extractNumber(b)) // 按文件开头的数字大小排序
     .map(file => {
       const name = file.replace('.md', '')
       return {
@@ -19,7 +26,7 @@ function getRenminSidebar() {
     })
 }
 
-// 动态自动获取新华社文章列表
+// 动态自动获取新华社文章列表（带自然数字排序）
 function getXinhuaSidebar() {
   const dirPath = path.resolve(__dirname, '../articles/xinhua')
   if (!fs.existsSync(dirPath)) return []
@@ -27,6 +34,7 @@ function getXinhuaSidebar() {
   const files = fs.readdirSync(dirPath)
   return files
     .filter(file => file.endsWith('.md'))
+    .sort((a, b) => extractNumber(a) - extractNumber(b)) // 按文件开头的数字大小排序
     .map(file => {
       const name = file.replace('.md', '')
       return {
