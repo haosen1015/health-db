@@ -2,21 +2,14 @@ import { defineConfig } from 'vitepress'
 import fs from 'fs'
 import path from 'path'
 
-// 辅助函数：从文件名开头提取数字，确保按数值大小自然排序
-function extractNumber(str: string): number {
-  const match = str.match(/^(\d+)/)
-  return match ? parseInt(match[1], 10) : 0
-}
-
-// 动态自动获取人民日报文章列表（带自然数字排序）
+// 动态自动获取人民日报文章列表
 function getRenminSidebar() {
-  const dirPath = path.resolve(__dirname, '../articles/renmin')
+  const dirPath = path.resolve('articles/renmin')
   if (!fs.existsSync(dirPath)) return []
 
   const files = fs.readdirSync(dirPath)
   return files
     .filter(file => file.endsWith('.md'))
-    .sort((a, b) => extractNumber(a) - extractNumber(b)) // 按文件开头的数字大小排序
     .map(file => {
       const name = file.replace('.md', '')
       return {
@@ -26,15 +19,14 @@ function getRenminSidebar() {
     })
 }
 
-// 动态自动获取新华社文章列表（带自然数字排序）
+// 动态自动获取新华社文章列表
 function getXinhuaSidebar() {
-  const dirPath = path.resolve(__dirname, '../articles/xinhua')
+  const dirPath = path.resolve('articles/xinhua')
   if (!fs.existsSync(dirPath)) return []
 
   const files = fs.readdirSync(dirPath)
   return files
     .filter(file => file.endsWith('.md'))
-    .sort((a, b) => extractNumber(a) - extractNumber(b)) // 按文件开头的数字大小排序
     .map(file => {
       const name = file.replace('.md', '')
       return {
@@ -59,7 +51,7 @@ export default defineConfig({
       { text: '首页', link: '/' },
       { text: '宏观分析报告', link: '/reports/01-人民日报分类分析报告' },
       { text: '新华社文章', link: '/articles/xinhua/01-蛋白质没吃够' },
-      { text: '人民日报文章', link: '/articles/renmin/001-添加糖' } // 替换为拆分后的第一篇文章文件名
+      { text: '人民日报文章', link: '/articles/renmin/001-添加糖' }
     ],
 
     // 左侧边栏菜单
@@ -83,7 +75,7 @@ export default defineConfig({
         }
       ],
 
-      // 3. 人民日报文章侧边栏（自动列出所有拆分好的文章）
+      // 3. 人民日报文章侧边栏
       '/articles/renmin/': [
         {
           text: '人民日报健康文章',
