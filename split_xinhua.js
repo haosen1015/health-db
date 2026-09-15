@@ -9,39 +9,42 @@ if (!fs.existsSync(outputDir)) {
 }
 
 if (!fs.existsSync(inputFile)) {
-  console.error('找不到 xinhua.txt 文件！');
+  console.error('❌ 错误：找不到 xinhua.txt 文件！');
   process.exit(1);
 }
 
 const content = fs.readFileSync(inputFile, 'utf-8');
-// 按第X篇切割
-const articles = content.split(/第(?=\d+篇)/).filter(Boolean);
 
-articles.forEach(art => {
-  const matchNum = art.match(/^(\d+)篇/);
+// 根据链接拆分每一篇文章块
+const blocks = content.split(/(?=https:\/\/mp\.weixin\.qq\.com\/s\/)/).filter(b => b.trim());
+
+let successCount = 0;
+
+blocks.forEach(art => {
+  // 提取文章编号 (支持 "文章 1"、"文章13"、"文章5：" 等)
+  const matchNum = art.match(/文章\s*(\d+)/);
   if (!matchNum) return;
   
-  const num = matchNum[1].padStart(2, '0');
+  const numInt = parseInt(matchNum[1], 10);
+  const num = numInt.toString().padStart(2, '0');
   
   // 提取链接
   const urlMatch = art.match(/https:\/\/mp\.weixin\.qq\.com\/s\/[^\s\n]+/);
   const url = urlMatch ? urlMatch[0] : '';
 
-  // 提取核心关键词/小标题作为文件名补充
+  // 提取关键词生成文件名
   let titleKeyword = '';
-  const kwMatch = art.match(/关键词[：:]?\s*([^\n]+)/) || art.match(/核心关键字[：:]?\s*([^\n]+)/);
+  const kwMatch = art.match(/(?:关键词|关键字)[：:]?\s*([^\n]+)/);
   if (kwMatch) {
-    const firstKw = kwMatch[1].split(/[、,，]/)[0].trim();
+    const firstKw = kwMatch[1].split(/[、,，\s]/)[0].replace(/[*#]/g, '').trim();
     if (firstKw) titleKeyword = `-${firstKw}`;
   }
 
   const fileName = `${num}${titleKeyword}.md`;
   const filePath = path.join(outputDir, fileName);
 
-  // 提取标题展示
-  let titleStr = `文章${parseInt(num, 10)}`;
+  const titleStr = `文章${numInt}`;
   
-  // 组装 Markdown 内容
   const mdContent = `---
 title: "${titleStr}"
 source: "新华社"
@@ -58,7 +61,8 @@ ${art.trim()}
 `;
 
   fs.writeFileSync(filePath, mdContent, 'utf-8');
-  console.log(`成功生成: ${fileName}`);
+  console.log(`✅ 成功生成: ${fileName}`);
+  successCount++;
 });
 
-console.log('🎉 新华社文章拆分完成！');
+console.log(`\n🎉 拆分完成！共成功处理 ${successCount} 篇文章。`);
