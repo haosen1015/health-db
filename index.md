@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "健康资讯与分析数据库"
   text: "新华社与人民日报健康文章及分析报告"
-  tagline: 收录 180+ 篇权威健康科普文章，提供可视化搜索与主题分类报告
+  tagline: 收录 200+ 篇权威健康科普文章，提供可视化搜索与主题分类报告
   actions:
     - theme: brand
       text: 浏览新华社文章
