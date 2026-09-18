@@ -1,87 +1,68 @@
 const fs = require('fs');
 const path = require('path');
 
-// 1. 读取 renmin.txt 源文件
-const txtPath = path.join(__dirname, 'renmin.txt');
+const inputFile = path.join(__dirname, 'renmin.txt');
 const outputDir = path.join(__dirname, 'articles', 'renmin');
-
-if (!fs.existsSync(txtPath)) {
-  console.error('❌ 未找到 renmin.txt 文件，请确认根目录下存在该文件！');
-  process.exit(1);
-}
-
-const content = fs.readFileSync(txtPath, 'utf-8');
-
-// 2. 按 "第 X 篇" 切割文章
-const articles = content.split(/(?=第\s*\d+\s*篇)/g).filter(item => item.trim().length > 0);
 
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
-let count = 0;
+if (!fs.existsSync(inputFile)) {
+  console.error('❌ 错误：找不到 renmin.txt 文件！');
+  process.exit(1);
+}
 
-articles.forEach((item, index) => {
-  const trimContent = item.trim();
-  if (!trimContent) return;
+const content = fs.readFileSync(inputFile, 'utf-8');
 
-  // 提取原文链接
-  const urlMatch = trimContent.match(/链接[：:\s]*(https?:\/\/[^\s]+)/i);
-  const url = urlMatch ? urlMatch[1] : '';
+// 根据 mp.weixin.qq.com 链接拆分文章块
+const blocks = content.split(/(?=https:\/\/mp\.weixin\.qq\.com\/s\/)/).filter(b => b.trim());
 
-  // 提取内容分析
-  const analysisMatch = trimContent.match(/内容分析[：:\s]*([\s\S]*?)(?=关键|标签|主题|$)/i);
-  let analysis = analysisMatch ? analysisMatch[1].trim() : '';
+let successCount = 0;
 
-  // 1. 宽松提取关键词（兼容各种空格、冒号格式）
-  const keywordMatch = trimContent.match(/(?:关键词|核心词|标签)[：:\s]*([^\n\r]+)/i);
-  let keywordStr = keywordMatch ? keywordMatch[1].trim() : '';
+blocks.forEach(art => {
+  // 匹配文章编号（支持 "文章 183"、"第183篇"、"文章183：" 等多种格式）
+  const matchNum = art.match(/(?:文章|第)\s*(\d+)/);
+  if (!matchNum) return;
   
-  let keywords = keywordStr ? keywordStr.split(/[\s,，、；;]+/).filter(k => k && !k.includes('链接')) : [];
+  const numInt = parseInt(matchNum[1], 10);
+  const num = numInt.toString().padStart(2, '0');
+  
+  // 提取链接
+  const urlMatch = art.match(/https:\/\/mp\.weixin\.qq\.com\/s\/[^\s\n]+/);
+  const url = urlMatch ? urlMatch[0] : '';
 
-  // 2. 智能保底方案：如果没找到关键词，自动从内容分析中提取主题词，避免出现“健康文章”
-  let mainKeyword = keywords[0];
-  if (!mainKeyword) {
-    // 尝试从内容分析提取第一个名词词组
-    const topicMatch = analysis.match(/[\u4e00-\u9fa5]{2,6}/);
-    mainKeyword = topicMatch ? topicMatch[0] : `文章${index + 1}`;
+  // 提取关键词生成文件名
+  let titleKeyword = '';
+  const kwMatch = art.match(/(?:关键词|关键字)[：:]?\s*([^\n]+)/);
+  if (kwMatch) {
+    const firstKw = kwMatch[1].split(/[、,，\s]/)[0].replace(/[*#]/g, '').trim();
+    if (firstKw) titleKeyword = `-${firstKw}`;
   }
 
-  // 清理文件名非法字符
-  mainKeyword = mainKeyword.replace(/[/\\?%*:|"<>]/g, '');
-
-  const numStr = String(index + 1).padStart(3, '0');
-  const fileName = `${numStr}-${mainKeyword}.md`;
+  const fileName = `${num}${titleKeyword}.md`;
   const filePath = path.join(outputDir, fileName);
 
-  // 组合关键词标签
-  const tagList = keywords.length > 0 
-    ? keywords.map(k => `\`${k}\``).join(' ') 
-    : `\`${mainKeyword}\``;
-
-  // 渲染成标准 Markdown 格式
+  const titleStr = `文章${numInt}`;
+  
   const mdContent = `---
-title: "文章${index + 1}: ${mainKeyword}"
+title: "${titleStr}"
 source: "人民日报"
 ---
 
-# 文章${index + 1}: ${mainKeyword}健康科普
+# ${titleStr}
 
-> **原文链接**：[点击查看微信原文](${url || '#'})
-
+${url ? `> **原文链接**：[点击查看微信原文](${url})\n` : ''}
 ---
 
 ## 📌 内容分析
 
-${analysis || trimContent}
-
----
-
-**核心关键词**： ${tagList}
+${art.trim()}
 `;
 
   fs.writeFileSync(filePath, mdContent, 'utf-8');
-  count++;
+  console.log(`✅ 成功生成: ${fileName}`);
+  successCount++;
 });
 
-console.log(`✅ 修复完成！已成功重新抓取并生成 ${count} 篇包含精准主题词的人民日报文章！`);
+console.log(`\n🎉 拆分完成！共成功处理 ${successCount} 篇人民日报文章。`);
