@@ -10,11 +10,19 @@ hero:
   actions:
     - theme: brand
       text: 浏览新华社文章
-      link: /articles/xinhua/001-优质蛋白质   # 请替换为你 xinhua 文件夹下第一篇文章的准确名字
+      link: /articles/xinhua/001-优质蛋白质
     - theme: brand
       text: 浏览人民日报文章
-      link: /articles/renmin/01-人民日报分类分析报告  # 请替换为你 renmin 文件夹下第一篇文章的准确名字
+      link: /articles/renmin/01-人民日报分类分析报告
     - theme: alt
       text: 查看宏观分析报告
       link: /reports/01-人民日报分类分析报告
+
+features:
+  - title: 权威来源
+    details: 汇聚新华社、人民日报等官方主流媒体的健康养生科普与资讯。
+  - title: 深度分析
+    details: 提供分类分析报告，涵盖膳食搭配、慢性病预防、生活习惯等主题。
+  - title: 快捷检索
+    details: 支持全文关键字搜索、标签分类筛选，快速获取精准健康建议。
 ---
