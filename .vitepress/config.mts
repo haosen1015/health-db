@@ -30,11 +30,6 @@ const xinhuaItems = getSidebarItems('articles/xinhua')
 const renminItems = getSidebarItems('articles/renmin')
 const reportsItems = getSidebarItems('reports')
 
-// 自动寻找人民日报安全的跳转路径（如果 articles/renmin 为空，则安全跳转到 reports 里的报告）
-const defaultRenminLink = renminItems.length > 0 
-  ? renminItems[0].link 
-  : '/reports/01-人民日报分类分析报告'
-
 export default defineConfig({
   title: "健康资讯与分析数据库",
   description: "个人健康数据与文章知识库",
@@ -45,8 +40,8 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       { text: '综合分析报告', link: reportsItems[0]?.link || '/reports/01-人民日报分类分析报告' },
-      { text: '新华社文章', link: xinhuaItems[0]?.link || '/reports/02-新华社综合分析报告' },
-      { text: '人民日报文章', link: defaultRenminLink }
+      { text: '新华社文章', link: xinhuaItems[0]?.link || '/articles/xinhua/001-优质蛋白质' },
+      { text: '人民日报文章', link: renminItems[0]?.link || '/articles/renmin/001-优质蛋白质' }
     ],
 
     sidebar: {
@@ -64,10 +59,8 @@ export default defineConfig({
       ],
       '/articles/renmin/': [
         {
-          text: '人民日报文章列表',
-          items: renminItems.length > 0 ? renminItems : [
-            { text: '人民日报分类分析报告', link: '/reports/01-人民日报分类分析报告' }
-          ]
+          text: '人民日报文章列表（共 189 篇）',
+          items: renminItems
         }
       ]
     }
