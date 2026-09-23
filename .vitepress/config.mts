@@ -2,14 +2,22 @@ import { defineConfig } from 'vitepress'
 import fs from 'fs'
 import path from 'path'
 
-// 动态自动获取人民日报文章列表
+// 提取文件名开头的数字进行按数值排序（如 1, 2, ... 189）
+function sortByNumber(a: string, b: string) {
+  const numA = parseInt(a.match(/^\d+/)?.[0] || '0', 10)
+  const numB = parseInt(b.match(/^\d+/)?.[0] || '0', 10)
+  return numA - numB
+}
+
+// 动态自动获取人民日报文章列表（按数字正确排序，并过滤无用冗余文件）
 function getRenminSidebar() {
   const dirPath = path.resolve('articles/renmin')
   if (!fs.existsSync(dirPath)) return []
 
   const files = fs.readdirSync(dirPath)
   return files
-    .filter(file => file.endsWith('.md'))
+    .filter(file => file.endsWith('.md') && !file.includes('-文章.')) // 过滤掉包含"-文章."的过渡重复文件
+    .sort(sortByNumber) // 按序号 1~189 排序
     .map(file => {
       const name = file.replace('.md', '')
       return {
@@ -27,6 +35,7 @@ function getXinhuaSidebar() {
   const files = fs.readdirSync(dirPath)
   return files
     .filter(file => file.endsWith('.md'))
+    .sort(sortByNumber)
     .map(file => {
       const name = file.replace('.md', '')
       return {
