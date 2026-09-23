@@ -6,8 +6,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: '首页', link: '/' },
-      { text: '新华社文章', link: '/articles/xinhua/001-优质蛋白质' },
-      { text: '人民日报文章', link: '/articles/renmin/001-优质蛋白质' }
+      { text: '新华社文章', link: '/articles/xinhua/001-优质蛋白质' }
     ],
     sidebar: {
       '/articles/xinhua/': [
