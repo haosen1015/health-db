@@ -1,71 +1,79 @@
 import { defineConfig } from 'vitepress'
+import fs from 'fs'
+import path from 'path'
+
+// 1. 按照数字前缀排序的辅助函数（兼容 01, 001, 161 等文件名格式）
+function sortByNumber(a: string, b: string) {
+  const numA = parseInt(a.match(/^\d+/)?.[0] || '0', 10)
+  const numB = parseInt(b.match(/^\d+/)?.[0] || '0', 10)
+  return numA - numB
+}
+
+// 2. 通用自动读取函数：传入相对根目录的文件夹路径（如 'articles/xinhua' 或 'reports'）
+function getSidebarByDir(dirRelativePath: string) {
+  const dirPath = path.resolve(process.cwd(), dirRelativePath)
+  if (!fs.existsSync(dirPath)) return []
+
+  return fs.readdirSync(dirPath)
+    .filter(file => file.endsWith('.md') && file !== 'index.md')
+    .sort(sortByNumber)
+    .map(file => {
+      const fileName = file.replace(/\.md$/, '')
+      return {
+        text: fileName,
+        link: `/${dirRelativePath}/${fileName}`
+      }
+    })
+}
+
+// 快速获取各板块的第一篇文章链接，用于导航栏和主页按钮跳转（防止死链接 404）
+const xinhuaList = getSidebarByDir('articles/xinhua')
+const renminList = getSidebarByDir('articles/renmin')
+const reportsList = getSidebarByDir('reports')
+
+const xinhuaFirstLink = xinhuaList[0]?.link || '/'
+const renminFirstLink = renminList[0]?.link || '/'
+const reportsFirstLink = reportsList[0]?.link || '/'
 
 export default defineConfig({
   title: "健康资讯与分析数据库",
   description: "个人健康数据与文章知识库",
+  
+  // 核心：防止打错字死链直接导致网页崩溃
+  ignoreDeadLinks: true,
+
   themeConfig: {
+    // 顶部导航栏（保持整体性，精准跳转到对应板块第一篇）
     nav: [
       { text: '首页', link: '/' },
-      { text: '综合分析报告', link: '/reports/01-人民日报分类分析报告' },
-      { text: '新华社文章', link: '/articles/xinhua/001-优质蛋白质' },
-      { text: '人民日报文章', link: '/articles/renmin/161-微胖有利于长寿' }
+      { text: '综合分析报告', link: reportsFirstLink },
+      { text: '新华社文章', link: xinhuaFirstLink },
+      { text: '人民日报文章', link: renminFirstLink }
     ],
-    
+
+    // 侧边栏：三大板块完全隔离，各司其职
     sidebar: {
-      // 1. 综合报告板块
+      // 综合分析报告板块
       '/reports/': [
         {
           text: '宏观分析报告',
-          items: [
-            { text: '01-人民日报分类分析报告', link: '/reports/01-人民日报分类分析报告' },
-            { text: '02-新华社综合分析报告', link: '/reports/02-新华社综合分析报告' }
-          ]
-        }
-      ],
-      
-      // 2. 新华社板块 (001-026全部补全)
-      '/articles/xinhua/': [
-        {
-          text: '新华社文章列表',
-          items: [
-            { text: '001-优质蛋白质', link: '/articles/xinhua/001-优质蛋白质' },
-            { text: '002-升糖指数', link: '/articles/xinhua/002-升糖指数' },
-            { text: '003-生物年龄', link: '/articles/xinhua/003-生物年龄' },
-            { text: '004-控糖黄金期', link: '/articles/xinhua/004-控糖黄金期' },
-            { text: '005-烫食', link: '/articles/xinhua/005-烫食' },
-            { text: '006-贴秋膘', link: '/articles/xinhua/006-贴秋膘' },
-            { text: '007-厨房坏习惯', link: '/articles/xinhua/007-厨房坏习惯' },
-            { text: '008-膳食多样性', link: '/articles/xinhua/008-膳食多样性' },
-            { text: '009-变质调味品', link: '/articles/xinhua/009-变质调味品' },
-            { text: '010-踝泵运动', link: '/articles/xinhua/010-踝泵运动' },
-            { text: '011-踝泵运动', link: '/articles/xinhua/011-踝泵运动' },
-            { text: '012-睡眠不好', link: '/articles/xinhua/012-睡眠不好' },
-            { text: '013-控糖', link: '/articles/xinhua/013-控糖' },
-            { text: '014-上班族', link: '/articles/xinhua/014-上班族' },
-            { text: '015-贴秋膘', link: '/articles/xinhua/015-贴秋膘' },
-            { text: '016-脑出血', link: '/articles/xinhua/016-脑出血' },
-            { text: '017-零食运动', link: '/articles/xinhua/017-零食运动' },
-            { text: '018-雷海潮', link: '/articles/xinhua/018-雷海潮' },
-            { text: '019-速溶咖啡', link: '/articles/xinhua/019-速溶咖啡' },
-            { text: '020-脑出血', link: '/articles/xinhua/020-脑出血' },
-            { text: '021-低钾血症', link: '/articles/xinhua/021-低钾血症' },
-            { text: '022-控糖', link: '/articles/xinhua/022-控糖' },
-            { text: '023-慢性压力', link: '/articles/xinhua/023-慢性压力' },
-            { text: '024-慢性压力', link: '/articles/xinhua/024-慢性压力' },
-            { text: '025-牙齿酸蚀症', link: '/articles/xinhua/025-牙齿酸蚀症' },
-            { text: '026-白砂糖', link: '/articles/xinhua/026-白砂糖' }
-          ]
+          items: reportsList
         }
       ],
 
-      // 3. 人民日报板块
+      // 新华社文章板块
+      '/articles/xinhua/': [
+        {
+          text: '新华社文章列表',
+          items: xinhuaList
+        }
+      ],
+
+      // 人民日报文章板块
       '/articles/renmin/': [
         {
           text: '人民日报文章列表',
-          items: [
-            // 截图左侧折叠了，但我看到你顶部打开了这篇，先放进来，有别的你后续照着加
-            { text: '161-微胖有利于长寿', link: '/articles/renmin/161-微胖有利于长寿' }
-          ]
+          items: renminList
         }
       ]
     }
