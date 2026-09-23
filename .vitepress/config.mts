@@ -2,22 +2,22 @@ import { defineConfig } from 'vitepress'
 import fs from 'fs'
 import path from 'path'
 
-// 提取文件名开头的数字进行按数值排序（如 1, 2, ... 189）
+// 按文件名开头的数字正确排序（从 1 排到 189）
 function sortByNumber(a: string, b: string) {
   const numA = parseInt(a.match(/^\d+/)?.[0] || '0', 10)
   const numB = parseInt(b.match(/^\d+/)?.[0] || '0', 10)
   return numA - numB
 }
 
-// 动态自动获取人民日报文章列表（按数字 1~189 顺序正确排列）
+// 获取人民日报全部文章列表
 function getRenminSidebar() {
   const dirPath = path.resolve('articles/renmin')
   if (!fs.existsSync(dirPath)) return []
 
   const files = fs.readdirSync(dirPath)
   return files
-    .filter(file => file.endsWith('.md')) // 读取所有 .md 文件，不盲目过滤
-    .sort(sortByNumber) // 严格按数字顺序排序（1, 2 ... 189）
+    .filter(file => file.endsWith('.md'))
+    .sort(sortByNumber)
     .map(file => {
       const name = file.replace('.md', '')
       return {
@@ -27,7 +27,7 @@ function getRenminSidebar() {
     })
 }
 
-// 动态自动获取新华社文章列表
+// 获取新华社全部文章列表
 function getXinhuaSidebar() {
   const dirPath = path.resolve('articles/xinhua')
   if (!fs.existsSync(dirPath)) return []
