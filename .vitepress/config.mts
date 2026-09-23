@@ -4,8 +4,8 @@ import path from 'path'
 
 // 自动获取指定文件夹下的所有 md 文件并按文件名排序生成 sidebar 菜单
 function getSidebarItems(dirName: string) {
-  // 1. 确保定位到根目录下的 articles 文件夹
-  const dirPath = path.resolve(__dirname, `../articles/${dirName}`)
+  // 用 process.cwd() 准确定位项目根目录
+  const dirPath = path.resolve(process.cwd(), `articles/${dirName}`)
   if (!fs.existsSync(dirPath)) return []
 
   const files = fs.readdirSync(dirPath)
@@ -15,8 +15,7 @@ function getSidebarItems(dirName: string) {
     .map(file => {
       const fileNameWithoutExt = file.replace(/\.md$/, '')
       return {
-        text: fileNameWithoutExt, // 显示的文件名（如：001-优质蛋白质）
-        // 关键点：链接必须正确对应相对路由路径
+        text: fileNameWithoutExt,
         link: `/articles/${dirName}/${fileNameWithoutExt}`
       }
     })
