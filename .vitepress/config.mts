@@ -15,7 +15,7 @@ function getSidebarItems(dirName: string) {
       const fileNameWithoutExt = file.replace(/\.md$/, '')
       return {
         text: fileNameWithoutExt, // 显示的文件名（如：001-优质蛋白质）
-        link: `/articles/${dirName}/${fileNameWithoutExt}`
+        link: `/articles/${dirName}/${fileNameWithoutExt}` // 修复点：保证前缀带有斜杠 /
       }
     })
 }
@@ -26,8 +26,14 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: '首页', link: '/' },
-      { text: '新华社文章', link: `/articles/xinhua/${getSidebarItems('xinhua')[0]?.text || ''}` },
-      { text: '人民日报文章', link: `/articles/renmin/${getSidebarItems('renmin')[0]?.text || ''}` }
+      { 
+        text: '新华社文章', 
+        link: getSidebarItems('xinhua')[0] ? `/articles/xinhua/${getSidebarItems('xinhua')[0].text}` : '/articles/xinhua/' 
+      },
+      { 
+        text: '人民日报文章', 
+        link: getSidebarItems('renmin')[0] ? `/articles/renmin/${getSidebarItems('renmin')[0].text}` : '/articles/renmin/' 
+      }
     ],
     sidebar: {
       '/articles/xinhua/': [
