@@ -9,15 +9,15 @@ function sortByNumber(a: string, b: string) {
   return numA - numB
 }
 
-// 动态自动获取人民日报文章列表（按数字正确排序，并过滤无用冗余文件）
+// 动态自动获取人民日报文章列表（按数字 1~189 顺序正确排列）
 function getRenminSidebar() {
   const dirPath = path.resolve('articles/renmin')
   if (!fs.existsSync(dirPath)) return []
 
   const files = fs.readdirSync(dirPath)
   return files
-    .filter(file => file.endsWith('.md') && !file.includes('-文章.')) // 过滤掉包含"-文章."的过渡重复文件
-    .sort(sortByNumber) // 按序号 1~189 排序
+    .filter(file => file.endsWith('.md')) // 读取所有 .md 文件，不盲目过滤
+    .sort(sortByNumber) // 严格按数字顺序排序（1, 2 ... 189）
     .map(file => {
       const name = file.replace('.md', '')
       return {
