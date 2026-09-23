@@ -11,10 +11,10 @@ hero:
       link: /articles/xinhua/001-优质蛋白质
     - theme: brand
       text: 浏览人民日报文章
-      link: /articles/renmin/01-人民日报分类分析报告
+      link: /reports/01-人民日报分类分析报告
     - theme: alt
       text: 查看宏观分析报告
-      link: /reports/01-人民日报分类分析报告
+      link: /reports/02-新华社综合分析报告
 
 features:
   - title: 权威来源
