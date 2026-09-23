@@ -2,93 +2,44 @@ import { defineConfig } from 'vitepress'
 import fs from 'fs'
 import path from 'path'
 
-// 按文件名开头的数字正确排序（从 1 排到 189）
-function sortByNumber(a: string, b: string) {
-  const numA = parseInt(a.match(/^\d+/)?.[0] || '0', 10)
-  const numB = parseInt(b.match(/^\d+/)?.[0] || '0', 10)
-  return numA - numB
-}
-
-// 获取人民日报全部文章列表
-function getRenminSidebar() {
-  const dirPath = path.resolve('articles/renmin')
+// 自动获取指定文件夹下的所有 md 文件并按文件名排序生成 sidebar 菜单
+function getSidebarItems(dirName: string) {
+  const dirPath = path.resolve(__dirname, `../articles/${dirName}`)
   if (!fs.existsSync(dirPath)) return []
 
   const files = fs.readdirSync(dirPath)
   return files
     .filter(file => file.endsWith('.md'))
-    .sort(sortByNumber)
+    .sort() // 确保按 001, 002, 003 顺序排列
     .map(file => {
-      const name = file.replace('.md', '')
+      const fileNameWithoutExt = file.replace(/\.md$/, '')
       return {
-        text: name,
-        link: `/articles/renmin/${name}`
-      }
-    })
-}
-
-// 获取新华社全部文章列表
-function getXinhuaSidebar() {
-  const dirPath = path.resolve('articles/xinhua')
-  if (!fs.existsSync(dirPath)) return []
-
-  const files = fs.readdirSync(dirPath)
-  return files
-    .filter(file => file.endsWith('.md'))
-    .sort(sortByNumber)
-    .map(file => {
-      const name = file.replace('.md', '')
-      return {
-        text: name,
-        link: `/articles/xinhua/${name}`
+        text: fileNameWithoutExt, // 显示的文件名（如：001-优质蛋白质）
+        link: `/articles/${dirName}/${fileNameWithoutExt}`
       }
     })
 }
 
 export default defineConfig({
   title: "健康资讯与分析数据库",
-  description: "新华社与人民日报健康文章及分析报告",
-
+  description: "个人健康数据与文章知识库",
   themeConfig: {
-    // 开启本地全文搜索
-    search: {
-      provider: 'local'
-    },
-
-    // 顶部导航栏
     nav: [
       { text: '首页', link: '/' },
-      { text: '宏观分析报告', link: '/reports/01-人民日报分类分析报告' },
-      { text: '新华社文章', link: '/articles/xinhua/01-蛋白质没吃够' },
-      { text: '人民日报文章', link: '/articles/renmin/001-添加糖' }
+      { text: '新华社文章', link: `/articles/xinhua/${getSidebarItems('xinhua')[0]?.text || ''}` },
+      { text: '人民日报文章', link: `/articles/renmin/${getSidebarItems('renmin')[0]?.text || ''}` }
     ],
-
-    // 左侧边栏菜单
     sidebar: {
-      // 1. 宏观分析报告侧边栏
-      '/reports/': [
-        {
-          text: '宏观分析报告',
-          items: [
-            { text: '人民日报分类分析报告', link: '/reports/01-人民日报分类分析报告' },
-            { text: '新华社综合分析报告', link: '/reports/02-新华社综合分析报告' }
-          ]
-        }
-      ],
-
-      // 2. 新华社文章侧边栏
       '/articles/xinhua/': [
         {
-          text: '新华社健康文章',
-          items: getXinhuaSidebar()
+          text: '新华社文章列表',
+          items: getSidebarItems('xinhua')
         }
       ],
-
-      // 3. 人民日报文章侧边栏
       '/articles/renmin/': [
         {
-          text: '人民日报健康文章',
-          items: getRenminSidebar()
+          text: '人民日报文章列表',
+          items: getSidebarItems('renmin')
         }
       ]
     }
