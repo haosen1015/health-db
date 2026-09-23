@@ -1,25 +1,4 @@
 import { defineConfig } from 'vitepress'
-import fs from 'fs'
-import path from 'path'
-
-// 自动获取指定文件夹下的所有 md 文件并按文件名排序生成 sidebar 菜单
-function getSidebarItems(dirName: string) {
-  // 用 process.cwd() 准确定位项目根目录
-  const dirPath = path.resolve(process.cwd(), `articles/${dirName}`)
-  if (!fs.existsSync(dirPath)) return []
-
-  const files = fs.readdirSync(dirPath)
-  return files
-    .filter(file => file.endsWith('.md'))
-    .sort() // 按 001, 002, 003 顺序排列
-    .map(file => {
-      const fileNameWithoutExt = file.replace(/\.md$/, '')
-      return {
-        text: fileNameWithoutExt,
-        link: `/articles/${dirName}/${fileNameWithoutExt}`
-      }
-    })
-}
 
 export default defineConfig({
   title: "健康资讯与分析数据库",
@@ -27,30 +6,33 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: '首页', link: '/' },
-      { 
-        text: '新华社文章', 
-        link: getSidebarItems('xinhua')[0] 
-          ? `/articles/xinhua/${getSidebarItems('xinhua')[0].text}` 
-          : '/' 
-      },
-      { 
-        text: '人民日报文章', 
-        link: getSidebarItems('renmin')[0] 
-          ? `/articles/renmin/${getSidebarItems('renmin')[0].text}` 
-          : '/' 
-      }
+      { text: '新华社文章', link: '/articles/xinhua/001-优质蛋白质' },
+      { text: '人民日报文章', link: '/articles/renmin/001-优质蛋白质' }
     ],
     sidebar: {
       '/articles/xinhua/': [
         {
           text: '新华社文章列表',
-          items: getSidebarItems('xinhua')
-        }
-      ],
-      '/articles/renmin/': [
-        {
-          text: '人民日报文章列表',
-          items: getSidebarItems('renmin')
+          items: [
+            { text: '001-优质蛋白质', link: '/articles/xinhua/001-优质蛋白质' },
+            { text: '002-升糖指数', link: '/articles/xinhua/002-升糖指数' },
+            { text: '003-生物年龄', link: '/articles/xinhua/003-生物年龄' },
+            { text: '004-控糖黄金期', link: '/articles/xinhua/004-控糖黄金期' },
+            { text: '005-烫食', link: '/articles/xinhua/005-烫食' },
+            { text: '006-贴秋膘', link: '/articles/xinhua/006-贴秋膘' },
+            { text: '007-厨房坏习惯', link: '/articles/xinhua/007-厨房坏习惯' },
+            { text: '008-膳食多样性', link: '/articles/xinhua/008-膳食多样性' },
+            { text: '009-变质调味品', link: '/articles/xinhua/009-变质调味品' },
+            { text: '010-踝泵运动', link: '/articles/xinhua/010-踝泵运动' },
+            { text: '011-踝泵运动', link: '/articles/xinhua/011-踝泵运动' },
+            { text: '012-睡眠不好', link: '/articles/xinhua/012-睡眠不好' },
+            { text: '013-控糖', link: '/articles/xinhua/013-控糖' },
+            { text: '014-上班族', link: '/articles/xinhua/014-上班族' },
+            { text: '015-贴秋膘', link: '/articles/xinhua/015-贴秋膘' },
+            { text: '016-脑出血', link: '/articles/xinhua/016-脑出血' },
+            { text: '017-零食运动', link: '/articles/xinhua/017-零食运动' },
+            { text: '018-雷海潮', link: '/articles/xinhua/018-雷海潮' }
+          ]
         }
       ]
     }
