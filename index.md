@@ -11,7 +11,7 @@ hero:
       link: /articles/xinhua/001-优质蛋白质
     - theme: brand
       text: 浏览人民日报文章
-      link: /articles/renmin/001-优质蛋白质   <-- 换成 renmin 文件夹下第1篇文章的名（如 001-xxx）
+      link: /articles/renmin/171-增肌
     - theme: alt
       text: 查看宏观分析报告
       link: /reports/01-人民日报分类分析报告
@@ -23,4 +23,4 @@ features:
     details: 提供分类分析报告，涵盖膳食搭配、慢性病预防、生活习惯等主题。
   - title: 快捷检索
     details: 支持全文关键字搜索、标签分类筛选，快速获取精准健康建议。
----
+---s

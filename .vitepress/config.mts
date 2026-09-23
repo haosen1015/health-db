@@ -30,6 +30,11 @@ const xinhuaItems = getSidebarItems('articles/xinhua')
 const renminItems = getSidebarItems('articles/renmin')
 const reportsItems = getSidebarItems('reports')
 
+// 确定人民日报第一篇文章的跳转链接
+const firstRenminLink = renminItems.length > 0 
+  ? renminItems[0].link 
+  : '/articles/renmin/171-增肌'
+
 export default defineConfig({
   title: "健康资讯与分析数据库",
   description: "个人健康数据与文章知识库",
@@ -41,7 +46,7 @@ export default defineConfig({
       { text: '首页', link: '/' },
       { text: '综合分析报告', link: reportsItems[0]?.link || '/reports/01-人民日报分类分析报告' },
       { text: '新华社文章', link: xinhuaItems[0]?.link || '/articles/xinhua/001-优质蛋白质' },
-      { text: '人民日报文章', link: renminItems[0]?.link || '/articles/renmin/001-优质蛋白质' }
+      { text: '人民日报文章', link: firstRenminLink }
     ],
 
     sidebar: {
@@ -59,7 +64,7 @@ export default defineConfig({
       ],
       '/articles/renmin/': [
         {
-          text: '人民日报文章列表（共 189 篇）',
+          text: '人民日报文章列表（189 篇）',
           items: renminItems
         }
       ]
