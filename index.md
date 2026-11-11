@@ -8,10 +8,10 @@ hero:
   actions:
     - theme: brand
       text: 浏览新华社文章
-      link: /articles/xinhua/
+      link: /articles/xinhua/001-优质蛋白质
     - theme: brand
       text: 浏览人民日报文章
-      link: /articles/renmin/
+      link: /articles/renmin/171-增肌
     - theme: alt
       text: 查看宏观分析报告
       link: /reports/01-人民日报分类分析报告
