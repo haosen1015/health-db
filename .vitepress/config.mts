@@ -43,7 +43,6 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       { text: '综合分析报告', link: reportsItems[0]?.link || '/reports/01-人民日报分类分析报告' },
-      // 👉 新增：国家战略清单导航入口
       { text: '国家战略清单', link: '/reports/03-国家战略政策清单' },
       { text: '新华社文章', link: xinhuaItems[0]?.link || '/articles/xinhua/001-优质蛋白质' },
       { text: '人民日报文章', link: renminFirstLink }
