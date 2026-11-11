@@ -1,7 +1,0 @@
-/* 让 VitePress 首页的按钮容器居中并支持自动换行 */
-.VPHero .actions {
-  display: flex !important;
-  justify-content: center !important;
-  flex-wrap: wrap !important;
-  gap: 12px !important;
-}
