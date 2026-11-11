@@ -5,16 +5,21 @@ hero:
   name: "健康资讯与分析数据库"
   text: "新华社与人民日报健康文章及分析报告"
   tagline: "收录 200+ 篇权威健康科普文章，提供可视化搜索与主题分类报告"
-  actions:
-    - theme: brand
-      text: 浏览新华社文章
-      link: /articles/xinhua/001-优质蛋白质
-    - theme: brand
-      text: 浏览人民日报文章
-      link: /articles/renmin/171-增肌
-    - theme: alt
-      text: 查看宏观分析报告
-      link: /reports/01-人民日报分类分析报告
+actions:
+  - theme: brand
+    text: 浏览新华社文章
+    link: /articles/xinhua/
+  - theme: brand
+    text: 浏览人民日报文章
+    link: /articles/renmin/
+  - theme: alt
+    text: 查看宏观分析报告
+    link: /reports/01-人民日报分类分析报告
+  # 👇 新增这一行（按钮文案为：国家战略清单）：
+  - theme: alt
+    text: 国家战略清单
+    link: /reports/03-国家战略政策清单
+
 
 features:
   - title: 权威来源
